@@ -20,7 +20,9 @@ const ModifyPage = ({tno}) =>{
         
         <div className="text-3xl font-extrabold">
             Todo Modify Page
+            <br/>
             <button onClick={()=>moveToRead(tno)}>조회로 이동</button>
+            <br/>
             <button onClick={()=>moveToList()}>목록으로 이동</button>
         </div>
     )

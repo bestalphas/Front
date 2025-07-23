@@ -34,6 +34,7 @@ const ReadPage = () => {
         
             <div>
                 <button onClick={()=>moveToModify(tno)}>Test Modify</button>
+                <br/>
                 <button onClick={()=>moveToList()}>Test list</button>
             </div>
         </div>
