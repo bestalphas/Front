@@ -1,7 +1,6 @@
 import { useEffect,useState } from "react";
 import { getList } from "../../api/todoApi";
 import useCustomMove from "../../hooks/useCustomMove";
-import { data } from "react-router-dom";
 
 const initState = {
     dtoList:[],
