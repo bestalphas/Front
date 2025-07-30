@@ -35,7 +35,7 @@ const ListComponent = () =>{
                         <div className="flex">
                             <div className="font-extrabold text-2xl p-2 w-1/12">{todo.tno}</div>
                             <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">{todo.title}</div>
-                            <div className="text-1xl m-1 l-2 w-3/12 font-medium">{todo}</div>
+                            <div className="text-1xl m-1 l-2 w-3/12 font-medium">{todo.dueDate}</div>
                         </div>
                     </div>
                 )}
