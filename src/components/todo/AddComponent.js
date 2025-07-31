@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { postAdd } from "../../api/todoApi";
 import ResultModal from "../common/ResultModal";
+import useCustomMove from "../../hooks/useCustomMove";
+
 
 const initState={
     title:'',
@@ -13,6 +15,8 @@ const AddComponent = () =>{
     const[todo,setTodo] = useState({...initState})
 
     const[result, setResult] = useState(null)
+
+    const{moveToList} = useCustomMove;
 
     const handleChangeTodo = (e) => {
         todo[e.target.name] = e.target.value
@@ -31,11 +35,16 @@ const AddComponent = () =>{
         })
     }
 
+    const closeModal = () => {
+        setResult(null)
+        moveToList()
+    }
     return(
         <div className="border-2 border-sky-200 mt-2 m-2 p-4">
             
-            
-            
+            {result ? <ResultModal title={'글 등록'} content={`${result}번 글 등록`}
+            callbackFn={closeModal}></ResultModal>:<></>}
+
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
                     <div className="w-1/5 p-6 text-right font-bold">TITLE</div>
@@ -48,7 +57,7 @@ const AddComponent = () =>{
             </div>
                 <div className="flex justify-end">
                     <div className="relative mb-4 flex p-4 flex-wrap items-stretch">
-                        <button type="button" className="rounder p-4 w-36 bg-blue-500 text-xl text-white" onClick={handleClickAdd}>
+                        <button type="button" className="rounded p-4 w-36 bg-blue-500 text-xl text-white" onClick={handleClickAdd}>
                             ADD
                         </button>
                     </div>

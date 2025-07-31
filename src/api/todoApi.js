@@ -23,3 +23,9 @@ export const postAdd = async (todoObj) => {
 
     return res.data
 }
+
+export const putOne = async(todo) => {
+    const res = await axios.put(`${prefix}/${todo.tno}`)
+    
+    return res.data
+}
