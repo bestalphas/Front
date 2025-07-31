@@ -16,7 +16,7 @@ const AddComponent = () =>{
 
     const[result, setResult] = useState(null)
 
-    const{moveToList} = useCustomMove;
+    const{moveToList} = useCustomMove();
 
     const handleChangeTodo = (e) => {
         todo[e.target.name] = e.target.value
@@ -28,8 +28,9 @@ const AddComponent = () =>{
 
         postAdd(todo).then(result =>{
             
-            setResult(result.TNO)
+            setResult(result.tno)
             setTodo({...initState})
+            console.log("postAdd 결과:",result)
         }).catch(e=>{
             console.error(e)
         })
