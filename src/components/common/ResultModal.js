@@ -23,3 +23,5 @@ const ResultModal = ({title,content,callbackFn}) =>{
         </div>
     )
 }
+
+export default ResultModal;
