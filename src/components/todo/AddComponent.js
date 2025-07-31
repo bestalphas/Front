@@ -43,7 +43,7 @@ const AddComponent = () =>{
     return(
         <div className="border-2 border-sky-200 mt-2 m-2 p-4">
             
-            {result ? <ResultModal title={'글 등록'} content={`${result}번 글 등록`}
+            {result ? <ResultModal title={'글 등록'} content={`${result}번 글 ${todo.title}등록 완료`}
             callbackFn={closeModal}></ResultModal>:<></>}
 
             <div className="flex justify-center">
