@@ -41,7 +41,17 @@ const useCustomMove = () =>{
             search:queryDefault
         })
     }
-    return{moveToList,page,size,moveToModify}
+    
+    const moveToRead = (num) => {
+        console.log(queryDefault)
+
+        navigate({
+            pathname:`../read/${num}`,
+            search:queryDefault
+        })  
+    }
+
+    return{moveToList,page,size,moveToModify,moveToRead}
 
     
 }
