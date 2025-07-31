@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createSearchParams,useNavigate,useSearchParams } from "react-router-dom";
 
 const getNum = (param,defaultValue) => {
@@ -12,6 +13,8 @@ const useCustomMove = () =>{
     const navigate = useNavigate()
 
     const [queryParams] = useSearchParams()
+
+    const[refresh, setRefresh] = useState(false)
     
     const page = getNum(queryParams.get(`page`),1)
     const size = getNum(queryParams.get(`size`),10)
@@ -30,6 +33,9 @@ const useCustomMove = () =>{
         }else{
             queryStr = queryDefault 
         }
+
+        setRefresh(!refresh)
+
         navigate({pathname:`../list`, search:queryStr})
     }
     
@@ -51,7 +57,7 @@ const useCustomMove = () =>{
         })  
     }
 
-    return{moveToList,page,size,moveToModify,moveToRead}
+    return{moveToList,page,size,moveToModify,moveToRead,refresh}
 
     
 }
