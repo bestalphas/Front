@@ -3,11 +3,11 @@ import { API_SERVER_HOST } from "./todoApi";
 
 const host = `${API_SERVER_HOST}/api/products`
 
-export const postAdd = async (product) =>{
+export const postAdd = async (product) => {
 
     const header = {headers: {"Content-Type" : "multipart/form-data"}}
 
-    const res = await jwtAxios.post(`${host}/` , product, header)
+    const res = await axios.post(`${host}/` , product , header)
 
     return res.data
 }
