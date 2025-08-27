@@ -1,99 +1,166 @@
-import { useEffect,useState } from "react";
+import { useEffect,useState,useRef} from "react";
 import { getOne,putOne,deleteOne} from "../../api/productsApi";
 import ResultModal from "../common/ResultModal";
 import useCustomMove from "../../hooks/useCustomMove";
+import { API_SERVER_HOST } from "../../api/todoApi";
+import FetchingModal from "../common/FetchingModal";
+
+ 
+const host = API_SERVER_HOST
 
 const initState = {
     pno:0,
     pname:'',
-    price:'',
-    delFlag:false
+    pdesc:'',
+    price:0,
+    delFlag:false,
+    uploadFileNames:[]
 }
 
 const ModifyComponent = ({pno}) =>{
     
-    const[product,setTodo] = useState({...initState})
+    const[product,setProduct] = useState(initState)
     
     const[result,setResult] = useState(null)
 
+    const[fetching, setFetching] = useState(false)
+
     const { moveToList, moveToRead } = useCustomMove()
+    
+    const uploadRef = useRef()
+
     useEffect(()=>{
+        
+        setFetching(true)
+
         getOne(pno).then(data =>{
-            setTodo(data)
+            setProduct(data)
+            setFetching(false)
         })
     },[pno])
     
     const handleClickModify = () =>{
-        putOne(product).then(data=>{
-            console.log("수정결과" + data)
+        
+        const files = uploadRef.current.files
+
+        const formData = new FormData()
+
+        for(let i = 0; i < files.length ; i++){
+            formData.append("files",files[i]);
+        }
+
+            formData.append("pname",product.pname)
+            formData.append("pdesc",product.pdesc)
+            formData.append("price",product.price)
+            formData.append("delFlag",product.delFlag)
+
+            for(let i = 0; i < product.uploadFileNames.length ; i++){
+                formData.append("uploadFileNames",product.uploadFileNames[i])
+            }
+            setFetching(true)
+
+            putOne(pno, formData).then(data=>{
+            
             setResult('Modified')
+            setFetching(false)
         })
     }
 
     const handleClickDelete=()=>{
         deleteOne(pno).then(data=>{
-            console.log("삭제 결과: " + data)
-            setResult('삭제성공')
+            
+            setResult('삭제')
+            setFetching(false)
         })
     }
 
     const closeModal = () =>{
-        if(result ==='삭제성공'){
-            moveToList()
-        }else{
+        if(result ==='수정'){
             moveToRead(pno)
-        }
+        }else if(result ==='삭제')
+            moveToList({page:1})
+        setResult(null)
     }
 
-
-    const handleChangeTodo =(e) =>{
+    const handleChangeProduct =(e) =>{
         product[e.target.name]=e.target.value
 
-        setTodo({...product})
+        setProduct({...product})
     }
 
-    const handleChangeTodoComplete = (e) =>{
+    const handleChangeProductComplete = (e) =>{
         const value = e.target.value
         product.delFlag = (value ==='Y')
-        setTodo({...product})
+        setProduct({...product})
     }
     
+    const deleteOldImages = (imageName) => {
+
+        const resultFileNames = product.uploadFileNames.filter(fileName => fileName !== imageName)
+    
+        product.uploadFileNames = resultFileNames
+
+        setProduct({...product})
+    }
     return(
         
         <div className="border-2 border-sky-200 mt-2 m-2 p-4">
-            
-            {result ? <ResultModal title={'처리결과'} content={result} callbackFn={closeModal}></ResultModal> : <></>}
+            {fetching? <FetchingModal/> :<></>}
+            {result ? <ResultModal title={`${result}`} content={'정상적으로 처리되었습니다'} callbackFn={closeModal}></ResultModal> : <></>}
             
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-                    <div className="w-1/5 p-6 text-right font-bold">번호</div>
-                    <div className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100">{product.pno}</div>
+                    <div className="w-1/5 p-6 text-right font-bold">Product Name</div>
+                    <input className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100" name="pname" type={'text'} value={product.pname} onChange={handleChangeProduct}></input>
                     </div>
             </div>
 
-            <div className="flex justify-center">n
+             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-                    <div className="w-1/5 p-6 text-right font-bold">상품이름</div>
-                    <div className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100">{product.pname}</div>
+                    <div className="w-1/5 p-6 text-right font-bold">DESC</div>
+                    <textarea className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100" name="pdesc" rows="4" value={product.pdesc} onChange={handleChangeProduct}>{product.pdesc}</textarea>
                     </div>
             </div>
 
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-                    <div className="w-1/5 p-6 text-right font-bold">가격</div>
-                    <input className="w-4/5 p-6 rounded-r border border-solid border-neutral-500 shadow-md" name="title" type={'text'} value={product.price} onChange={handleChangeTodo}></input>
+                    <div className="w-1/5 p-6 text-right font-bold">Price</div>
+                    <input className="w-4/5 p-6 rounded-r border border-solid border-neutral-500 shadow-md" name="price" type={'number'} value={product.price} onChange={handleChangeProduct}></input>
                     </div>
             </div>       
                     
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-                    <div className="w-1/5 p-6 text-right font-bold">완료여부</div>
-                    <select name="status" className="border-solid border-2 rounded m-1 p-2" onChange={handleChangeTodoComplete} value={product.delFlag? 'Y':'N'}>
-                        <option value='Y'>완료</option>
-                        <option value='N'>수정중</option>
+                    <div className="w-1/5 p-6 text-right font-bold">DELETE</div>
+                    <select name="delFlag" className="border-solid border-2 rounded m-1 p-2" onChange={handleChangeProduct} value={product.delFlag}>
+                        <option value={false}>사용</option>
+                        <option value={true}>삭제</option>
                     </select>
                 </div>
             </div>
+
+            <div className="flex justify-center">
+                <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+                    <div className="w-1/5 p-6 text-right font-bold">FILES</div>
+                    <input ref={uploadRef} className="w-4/5 p-6 rounded-r border border-solid border-neutral-500 shadow-md" type={'file'} multiple={true}></input>
+                    </div>
+            </div> 
+            
+            <div className="flex justify-center">
+                <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+                    <div className="w-1/5 p-6 text-right font-bold">IMAGE</div>
+                    <div className="w-4/5 justify-center flex flex-wrap items-start">
+                        {product.uploadFileNames.map((imgFile, i)=>
+                        <div className="flex justify-center flex-col w-1/3" key={i}>
+                            <button className="bg-blue-500 text-3xl text-white" onClick={()=>deleteOldImages(imgFile)}>DELETE</button>
+                            <img alt="img" src={`${host}/api/products/view/s_${imgFile}`}></img>
+                        </div>
+                    )}
+                </div>
+
+                </div>
+            </div>
+            
                 
                     
         
@@ -107,4 +174,4 @@ const ModifyComponent = ({pno}) =>{
     )
 }
 
-export default ModifyComponent;
+export default ModifyComponent

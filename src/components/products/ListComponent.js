@@ -1,48 +1,79 @@
-import { useEffect,useState } from "react";
-import { getList } from "../../api/productsApi";
+import { useEffect, useState } from "react";
+import {getList} from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
-import PageComponent from "../common/PageComponent";
+import FetchingModal from "../common/FetchingModal";
+import {API_SERVER_HOST} from "../../api/todoApi"
+import PageComponent from "../common/PageComponent"
+
+
+const host = API_SERVER_HOST
 
 const initState = {
-    dtoList:[],
-    pageNumList:[],
-    pageRequestDTO:null,
-    prev:false,
-    next:false,
-    totalCount:0,
-    prevPage:0,
-    nextPage:0,
-    totalPage:0,
-    current:0
+  dtoList:[],
+  pageNumList:[],
+  pageRequestDTO: null,
+  prev: false,
+  next: false,
+  totoalCount: 0,
+  prevPage: 0,
+  nextPage: 0,
+  totalPage: 0,
+  current: 0
 }
 
-const ListComponent = () =>{
-    const {page,size,moveToList,moveToRead} = useCustomMove()
+const ListComponent = () => {
 
-    const [serverData, setServerData] = useState(initState)
+    const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
 
-    useEffect(()=>{
-        getList({page,size}).then(data=>{
-            console.log(data)
-            setServerData(data)
-        })
+      //serverData는 나중에 사용
+      const [serverData, setServerData] = useState(initState)
+    
+      //for FetchingModal 
+      const [fetching, setFetching] = useState(false)
 
-    },[page,size])
+  useEffect(() => {
+
+    setFetching(true)
+
+    getList({page,size}).then(data => {
+      console.log(data)
+      setServerData(data)
+      setFetching(false)
+    })
+
+  }, [page,size, refresh])
 
     return(
-         <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
-            <div className="flex flex-wrap mx-auto justify-center p-6">
-                {serverData.dtoList.map(product =>
-                    <div key={product.pno} className="w-full min-w-[400px] p-2 m-2 rounded shadow-md" onClick={()=>moveToRead(product.pno)}>
-                        <div className="flex">
-                            <div className="font-extrabold text-2xl p-2 w-1/12">{product.pno}</div>
-                            <div className="text-1xl m-1 p-2 w-8/12 font-extrabold">{product.pname}</div>
-                        </div>
+    <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
+
+        {fetching? <FetchingModal/> :<></>}
+
+        <div className="flex flex-wrap mx-auto p-6">
+
+          {serverData.dtoList.map(product => 
+
+            <div key={product.pno} className="w-1/2 p-1 rounded shadow-md border-2" onClick={  () => moveToRead(product.pno)}>
+
+              <div className="flex flex-col h-full">
+                  <div className="font-extrabold text-2xl p-2 w-full">
+                    {product.pno}
+                  </div>
+
+                  <div className="text-1xl m-1 p-2 w-full flex flex-col"> 
+
+                    <div className="w-full overflow-hidden">
+                      <img alt="product" className="m-auto rounded-md w-60"
+                      src={`${host}/api/products/view/s_${product.uploadFileNames[0]}`}></img>
                     </div>
-                )}
+
+                  
+                  </div>
+              </div>
             </div>
-            <PageComponent serverData={serverData} movePage={moveToList}></PageComponent>
-            </div>
+          )}
+        </div>
+        <PageComponent serverData={serverData} movePage={moveToList}></PageComponent>
+    </div>
     )
 }
 

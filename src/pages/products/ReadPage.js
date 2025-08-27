@@ -18,7 +18,7 @@ const ReadPage = () => {
     return(
         <div className="font-extrabold w-full bg-white mt-6">
             <div className="text-4xl text-center">
-            Product Read Page Component.......{pno}
+            Product Read Page {pno}
             </div>
             <ReadComponent pno={pno}></ReadComponent>
         </div>

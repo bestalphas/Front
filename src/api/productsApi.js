@@ -25,8 +25,10 @@ export const getOne = async (pno) =>{
     return res.data
 }
 
-export const putOne = async(product) =>{
-    const res = await axios.put(`${host}/${product.pno}`,product)
+export const putOne = async(pno,product) =>{
+    const header = {headers: {"Content-Type" : "multipart/form-data"}}
+    
+    const res = await axios.put(`${host}/${pno}`,product, header)
     
     return res.data
 }
