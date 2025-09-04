@@ -39,7 +39,9 @@ const BasicMenu = () =>{
                     <Link to={'/member/login'}>로그인</Link>
                 </div>
                 :
-                <></>
+                <div className="text-white text-sm m-1 rounded">
+                    <Link to={'/member/logout'}>로그아웃</Link>
+                </div>
                 }
             </div>
         </nav>
