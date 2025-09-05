@@ -17,7 +17,3 @@ export const getCookie = (name) => {
 export const removeCookie = (name, path="/") =>{
     cookies.remove(name,{path})
 }
-
-export const chocochipCookie = () =>{
-    return null;
-}

@@ -1,5 +1,5 @@
 import { useDispatch,useSelector } from "react-redux";
-import { Navigate,useNavigate } from "react-router-dom";
+import { createSearchParams, Navigate,useNavigate } from "react-router-dom";
 import { loginPostAsync,logout } from "../slices/loginSlice";
 
 const useCustomLogin = () => {
@@ -32,8 +32,29 @@ const useCustomLogin = () => {
         const moveToLoginReturn = () =>{ //
             return <Navigate replace to= "/member/login"></Navigate>
         }
+        
+        const exceptionHandle = (ex) =>{
+            console.log("Exception ----------------")
 
-        return {loginState, isLogin, doLogin, doLogout, moveToLogin, moveToPath, moveToLoginReturn}
+            console.log(ex)
+
+            const errorMsg = ex.response.data.errorMsg
+            const errorStr = createSearchParams({error: errorMsg}).toString()
+
+            if(errorMsg ==='REQUIRE_LOGIN'){
+                alert("로그인 해야만 합니다")
+                navigate({pathname:'/member/login',search:errorStr})
+
+                return
+            }
+
+            if(ex.response.data.error ==='ERROR_ACCESSDENIED'){
+                alert('해당 메뉴를 사용할수 있는 권한이 없습니다')
+                navigate({pathname:'/member/login',search:errorStr})
+                return
+            }
+        }
+        return {loginState, isLogin, doLogin, doLogout, moveToLogin, moveToPath, moveToLoginReturn, exceptionHandle}
 }
 
 export default useCustomLogin;
