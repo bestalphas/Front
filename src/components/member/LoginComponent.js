@@ -1,9 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loginPostAsync } from "../../slices/loginSlice";
-import useCustomMove from "../../hooks/useCustomMove";
-import { data, Navigate, replace } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const initState ={
     email:'',
@@ -14,7 +10,7 @@ const LoginComponent = () =>{
     
     const [loginParam,setLoginParam] = useState({...initState})
 
-    const navigate = useNavigate()
+    const {doLogin, moveToPath} = useCustomLogin()
 
     const handleChange = (e) => {
         loginParam[e.target.name] = e.target.value
@@ -22,20 +18,17 @@ const LoginComponent = () =>{
         setLoginParam({...loginParam})
     }
 
-    const dispatch = useDispatch()
-
     const handleClickLogin = (e) =>{
-        dispatch(loginPostAsync(loginParam))
-        .unwrap()
+        doLogin(loginParam)
         .then(data=>{
-            console.log("after unwrap....")
+            
             console.log(data)
 
             if(data.error){
                 alert("이메일 또는 패스워드가 다시 입력하세요")
             }else{
                 alert("로그인 성공")
-                navigate({pathname:`/`},{replace:true})
+                moveToPath('/')
             }
         })
     }
